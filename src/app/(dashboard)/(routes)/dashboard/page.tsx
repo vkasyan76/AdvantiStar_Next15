@@ -1,3 +1,9 @@
-export default function Home() {
-  return <div className="flex items-center  justify-center">AdvantiStar</div>;
-}
+export const Dashboard = () => {
+  return (
+    <div className="flex min-h-screen items-center  justify-center">
+      AdvantiStar
+    </div>
+  );
+};
+
+export default Dashboard;
