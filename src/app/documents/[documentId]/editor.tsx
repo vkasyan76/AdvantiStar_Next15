@@ -10,9 +10,45 @@ import TableHeader from "@tiptap/extension-table-header";
 import TableRow from "@tiptap/extension-table-row";
 import Image from "@tiptap/extension-image";
 import ImageResize from "tiptap-extension-resize-image";
+import Underline from "@tiptap/extension-underline";
+
+import { useEditorStore } from "@/store/use-editor-store";
 
 export const Editor = () => {
+  const { setEditor } = useEditorStore();
+
+  // This component initializes the Tiptap editor and stores the Editor instance in the Zustand store.
+  // The onCreate method is part of the configuration options for the useEditor hook provided by @tiptap/react.
+  // A lifecycle method triggered when the editor is created.
+  // Inside onCreate, the editor instance is passed to the setEditor function, which updates the Zustand state defined in src\store\use-editor-store.ts.
   const editor = useEditor({
+    onCreate({ editor }) {
+      setEditor(editor);
+    },
+    // unmount the Editor, clean the global state
+    onDestroy() {
+      setEditor(null);
+    },
+    // To ensure that the global Zustand state (editor) remains in sync with the actual editor instance.
+    onUpdate({ editor }) {
+      setEditor(editor);
+    },
+    onSelectionUpdate({ editor }) {
+      setEditor(editor);
+    },
+    onTransaction({ editor }) {
+      setEditor(editor);
+    },
+    onFocus({ editor }) {
+      setEditor(editor);
+    },
+    onBlur({ editor }) {
+      setEditor(editor);
+    },
+    onContentError({ editor }) {
+      setEditor(editor);
+    },
+
     editorProps: {
       attributes: {
         style: "padding-left: 56px; padding-right: 56px;",
@@ -22,6 +58,7 @@ export const Editor = () => {
     },
     extensions: [
       StarterKit,
+      Underline,
       Image,
       ImageResize,
       TaskList,
