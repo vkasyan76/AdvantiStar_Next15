@@ -1,31 +1,162 @@
 "use client";
+import { useState } from "react";
 import { type Level } from "@tiptap/extension-heading";
 import { ColorResult, SketchPicker } from "react-color";
 import {
   BoldIcon,
   ChevronDownIcon,
   HighlighterIcon,
+  ImageIcon,
   ItalicIcon,
+  Link2Icon,
   ListTodoIcon,
   LucideIcon,
   MessageSquarePlusIcon,
   PrinterIcon,
   Redo2Icon,
   RemoveFormattingIcon,
+  SearchIcon,
   SpellCheckIcon,
   UnderlineIcon,
   Undo2Icon,
+  UploadIcon,
 } from "lucide-react";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import { useEditorStore } from "@/store/use-editor-store";
+
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+
+const ImageButton = () => {
+  const { editor } = useEditorStore();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [imageUrl, setImageUrl] = useState("");
+
+  // for adding an image as a link
+  const onChange = (src: string) => {
+    editor?.chain().focus().setImage({ src }).run();
+  };
+
+  // for uploading an image: converrt to a blob
+  const onUpload = () => {
+    // native HTML element that is dynamically created and used to handle file uploads
+    const input = document.createElement("input"); // Dynamically creates a new <input> element
+    input.type = "file"; // Sets the input type to "file"
+    input.accept = "image/*"; // Restricts the file selection to images
+
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0]; // Accesses the first selected file
+      if (file) {
+        const imageUrl = URL.createObjectURL(file); // Creates a temporary URL for the file
+        onChange(imageUrl); // Passes the image URL to the `onChange` handler
+      }
+    };
+
+    input.click(); // Programmatically opens the file dialog
+  };
+
+  const handleImageUrlSubmit = () => {
+    if (imageUrl) {
+      onChange(imageUrl); // Pass the image URL to the `onChange` handler
+      setImageUrl(""); // Reset the image URL input field
+      setIsDialogOpen(false); // Close the dialog
+    }
+  };
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button className="h-7 min-w-7 shrink-0 flex flex-col items-center justify-center rounded-sm hover:bg-neutral-200/80 px-1.5 overflow-hidden text-sm">
+            <ImageIcon className="size-4" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem onClick={onUpload}>
+            <UploadIcon className="size-4 mr-2" />
+            Upload
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setIsDialogOpen(true)}>
+            <SearchIcon className="size-4 mr-2" />
+            Paste image url
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Insert image URL</DialogTitle>
+          </DialogHeader>
+          <Input
+            placeholder="Insert image URL"
+            value={imageUrl}
+            onChange={(e) => setImageUrl(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleImageUrlSubmit();
+              }
+            }}
+          />{" "}
+          <DialogFooter>
+            <Button onClick={handleImageUrlSubmit}>Insert</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+};
+
+const LinkButton = () => {
+  const { editor } = useEditorStore();
+  const [value, setValue] = useState("");
+  const onChange = (href: string) => {
+    // link mark is applied to the currently selected text.
+    editor?.chain().focus().extendMarkRange("link").setLink({ href }).run();
+    // This ensures that the input field is cleared, preparing it for the next use.
+    setValue("");
+  };
+  return (
+    <DropdownMenu
+      onOpenChange={(open) => {
+        if (open) {
+          setValue(editor?.getAttributes("link")?.href || "");
+        }
+      }}
+    >
+      <DropdownMenuTrigger asChild>
+        <button className="h-7 min-w-7 shrink-0 flex flex-col items-center justify-center rounded-sm hover:bg-neutral-200/80 px-1.5 overflow-hidden text-sm">
+          <Link2Icon className="size-4" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="p-2.5 flex items-center gap-x-2">
+        <Input
+          placeholder="https://example.com"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+        />
+        <Button onClick={() => onChange(value)}>Apply</Button>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
 
 const HighlightColorButton = () => {
   const { editor } = useEditorStore();
@@ -317,8 +448,10 @@ export const Toolbar = () => {
       {/* Highlight  */}
       <HighlightColorButton />
       <Separator orientation="vertical" className="h-6 bg-neutral-300" />
-      {/* TODO: Link */}
-      {/* TODO: Image */}
+      {/* Link */}
+      <LinkButton />
+      {/* Image */}
+      <ImageButton />
       {/* TODO: Align */}
       {/* TODO: Line height */}
       {/* TODO: List */}
