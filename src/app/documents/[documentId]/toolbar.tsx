@@ -18,6 +18,8 @@ import {
   ListTodoIcon,
   LucideIcon,
   MessageSquarePlusIcon,
+  MinusIcon,
+  PlusIcon,
   PrinterIcon,
   Redo2Icon,
   RemoveFormattingIcon,
@@ -49,6 +51,101 @@ import { useEditorStore } from "@/store/use-editor-store";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+
+const FontSizeButton = () => {
+  const { editor } = useEditorStore();
+
+  // Get the current font size from the editor or default to "16px"
+  const currentFontSize =
+    editor?.getAttributes("textStyle").fontSize?.replace("px", "") || "16";
+
+  // State to manage font size, input value, and editing mode
+  const [fontSize, setFontSize] = useState(currentFontSize);
+  const [inputValue, setInputValue] = useState(fontSize);
+  const [isEditing, setIsEditing] = useState(false);
+
+  // Function to update font size
+  const updateFontSize = (newSize: string) => {
+    const size = parseInt(newSize); // Convert string to integer
+    if (!isNaN(size) && size > 0) {
+      // Set the font size in the editor using the chain command
+      editor?.chain().focus().setFontSize(`${size}px`).run();
+      setFontSize(newSize); // Update fontSize state
+      setInputValue(newSize); // Update inputValue state
+      setIsEditing(false); // Exit editing mode
+    }
+  };
+
+  // Handle changes in the input field
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value); // Update inputValue state
+  };
+
+  // Handle blur (when input loses focus)
+  const handleInputBlur = () => {
+    updateFontSize(inputValue); // Apply font size change
+  };
+
+  // Handle "Enter" key press while editing
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault(); // Prevent default form behavior
+      updateFontSize(inputValue); // Apply font size change
+      editor?.commands.focus(); // Refocus the editor
+    }
+  };
+
+  // Increment font size by 1
+  const increment = () => {
+    const newSize = parseInt(fontSize) + 1; // Increase font size
+    updateFontSize(newSize.toString()); // Update with the new size
+  };
+
+  // Decrement font size by 1 (ensure size is greater than 0)
+  const decrement = () => {
+    const newSize = parseInt(fontSize) - 1; // Decrease font size
+    if (newSize > 0) {
+      updateFontSize(newSize.toString()); // Update with the new size
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-x-0.5">
+      <button
+        className="h-7 w-7 shrink-0 flex items-center justify-center rounded-sm hover:bg-neutral-200/80"
+        onClick={decrement}
+      >
+        <MinusIcon className="size-4" />
+      </button>
+      {isEditing ? (
+        <input
+          type="text"
+          value={inputValue}
+          onChange={handleInputChange}
+          onBlur={handleInputBlur}
+          onKeyDown={handleKeyDown}
+          className="h-7 w-10 text-sm text-center border border-neutral-400 rounded-sm bg-transparent focus:outline-none focus:ring-0"
+        />
+      ) : (
+        <button
+          className="h-7 w-10 text-sm text-center border border-neutral-400 rounded-sm bg-transparent cursor-text"
+          onClick={() => {
+            setIsEditing(true);
+            setFontSize(currentFontSize);
+          }}
+        >
+          {currentFontSize}
+        </button>
+      )}
+      <button
+        className="h-7 w-7 shrink-0 flex items-center justify-center rounded-sm hover:bg-neutral-200/80"
+        onClick={increment}
+      >
+        <PlusIcon className="size-4" />
+      </button>
+    </div>
+  );
+};
 
 const ListButton = () => {
   const { editor } = useEditorStore();
@@ -540,7 +637,8 @@ export const Toolbar = () => {
       {/* Heading */}
       <HeadingLebvelButton />
       <Separator orientation="vertical" className="h-6 bg-neutral-300" />
-      {/* TODO: Font size */}
+      {/* Font size */}
+      <FontSizeButton />
       <Separator orientation="vertical" className="h-6 bg-neutral-300" />
       {sections[1].map((item) => (
         <ToolbarButton key={item.label} {...item} />
