@@ -20,6 +20,7 @@ import { FontSizeExtension } from "@/extensions/font-size";
 import { LineHeightExtension } from "@/extensions/line-height";
 
 import { useEditorStore } from "@/store/use-editor-store";
+import { Ruler } from "./ruler";
 
 export const Editor = () => {
   const { setEditor } = useEditorStore();
@@ -29,6 +30,7 @@ export const Editor = () => {
   // A lifecycle method triggered when the editor is created.
   // Inside onCreate, the editor instance is passed to the setEditor function, which updates the Zustand state defined in src\store\use-editor-store.ts.
   const editor = useEditor({
+    immediatelyRender: false, // Disable SSR rendering for hydration compatibility
     onCreate({ editor }) {
       setEditor(editor);
     },
@@ -113,12 +115,11 @@ export const Editor = () => {
           </tbody>
         </table>
       `,
-    // Explicitly disable SSR rendering for hydration compatibility
-    immediatelyRender: false,
   });
 
   return (
     <div className="size-full overflow-x-auto bg-[#F9FBFD] px-4 print:p-0 print:bg-white print:overflow-visible">
+      <Ruler />
       <div className="min-w-max flex justify-center w-[816px] py-4 print:py-0 mx-auto print:w-full print:min-w-0">
         <EditorContent editor={editor} />
       </div>
