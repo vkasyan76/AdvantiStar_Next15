@@ -1,6 +1,7 @@
 // import { Button } from "@/components/ui/button";
-import Link from "next/link";
+// import Link from "next/link";
 import { Navbar } from "./navbar";
+import { TemplatesGallery } from "./templates-gallery";
 
 const Home = () => {
   return (
@@ -9,11 +10,12 @@ const Home = () => {
         <Navbar />
       </div>
       <div className="mt-16">
-        Click
+        <TemplatesGallery />
+        {/* Click
         <Link href="/documents/123">
           <span className="text-blue-500 underline">&nbsp;here&nbsp;</span>
         </Link>{" "}
-        to go to document id
+        to go to document id */}
       </div>
     </div>
   );
