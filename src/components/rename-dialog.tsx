@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "sonner";
 import { useState } from "react";
 import {
   Dialog,
@@ -34,12 +35,13 @@ export const RenameDialog = ({
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsUpdating(true);
-    update({ id: documentId, title: title.trim() || "Untitled" }).finally(
-      () => {
+    update({ id: documentId, title: title.trim() || "Untitled" })
+      .catch(() => toast.error("Something went wrong"))
+      .then(() => toast.success("Document renamed"))
+      .finally(() => {
         setIsUpdating(false);
         setOpen(false);
-      }
-    );
+      });
   };
 
   return (
