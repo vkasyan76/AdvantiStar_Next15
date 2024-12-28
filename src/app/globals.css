@@ -226,7 +226,7 @@ body {
     }
 
     .selectedCell:after {
-      background: var(#959596);
+      background: #959596;
       content: "";
       left: 0;
       right: 0;
@@ -256,5 +256,29 @@ body {
   &.resize-cursor {
     cursor: ew-resize;
     cursor: col-resize;
+  }
+
+  /* coppied form Liveblocks quickstart */
+  /* For mobile */
+  .floating-threads {
+    display: none;
+  }
+  /* For desktop */
+  .anchored-threads {
+    display: block;
+    max-width: 300px;
+    width: 100%;
+    position: absolute;
+    right: 12px;
+  }
+
+  @media (max-width: 640px) {
+    .floating-threads {
+      display: block;
+    }
+
+    .anchored-threads {
+      display: none;
+    }
   }
 }
