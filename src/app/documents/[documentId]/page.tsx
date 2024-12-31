@@ -13,6 +13,8 @@ const DocumentIdPage = async ({ params }: DocumentIdPageProps) => {
 
   const { documentId } = await params;
 
+  // throw new Error("Not implemented");
+
   return (
     <div className="min-h-screen bg-[#FAFBFD]">
       {/* <h1>Document ID: {documentId}</h1> */}
