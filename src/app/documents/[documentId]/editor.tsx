@@ -35,6 +35,7 @@ export const Editor = () => {
   // A lifecycle method triggered when the editor is created.
   // Inside onCreate, the editor instance is passed to the setEditor function, which updates the Zustand state defined in src\store\use-editor-store.ts.
   const editor = useEditor({
+    autofocus: true,
     immediatelyRender: false, // Disable SSR rendering for hydration compatibility
     onCreate({ editor }) {
       setEditor(editor);

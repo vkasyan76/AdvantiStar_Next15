@@ -1,4 +1,4 @@
-export const Dashboard = () => {
+const Dashboard = () => {
   return (
     <div className="flex min-h-screen items-center  justify-center">
       AdvantiStar
